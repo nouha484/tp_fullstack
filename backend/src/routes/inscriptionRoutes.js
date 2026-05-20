@@ -2,14 +2,16 @@ import express from "express";
 import {
     sinscrire,
     seDesinscrire,
-    monInscription,
+    mesInscriptions,
+    getInscritsByFormation,
 } from "../controllers/inscriptionController.js";
-import { verifyToken } from "../middlewares/authMiddleware.js";
+import { verifyToken, verifyAdmin } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
+router.get("/mes-inscriptions", verifyToken, mesInscriptions);
+router.get("/formation/:formationId", verifyToken, verifyAdmin, getInscritsByFormation);
 router.post("/", verifyToken, sinscrire);
 router.delete("/", verifyToken, seDesinscrire);
-router.get("/mon-inscription", verifyToken, monInscription);
 
 export default router;
