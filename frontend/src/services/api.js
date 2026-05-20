@@ -22,6 +22,7 @@ export const deleteFormation = (id) => api.delete(`/formations/${id}`);
 
 // INSCRIPTIONS
 export const inscrire = (formationId) => api.post('/inscriptions', { formationId });
+export const seDesinscrire = () => api.delete('/inscriptions');
 export const getMesInscriptions = () => api.get('/inscriptions/mes-inscriptions');
 export const getInscrits = (formationId) => api.get(`/inscriptions/formation/${formationId}`);
 
