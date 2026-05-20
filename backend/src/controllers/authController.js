@@ -60,7 +60,18 @@ export const login = async (req, res) => {
             { expiresIn: "24h" }
         );
 
-        res.json({ token, role: user.role });
+        const etudiant = await prisma.etudiant.findUnique({ where: { userId: user.id } });
+
+        res.json({
+            token,
+            user: {
+                id: user.id,
+                email: user.email,
+                role: user.role,
+                nom: etudiant?.nom || '',
+                prenom: etudiant?.prenom || '',
+            },
+        });
     } catch (error) {
         res.status(500).json({ message: "Erreur serveur", error });
     }

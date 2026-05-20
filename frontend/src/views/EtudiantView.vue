@@ -36,13 +36,16 @@
         <h2>Mes inscriptions ({{ mesInscriptions.length }})</h2>
         <table v-if="mesInscriptions.length > 0">
           <thead>
-            <tr><th>Formation</th><th>Durée</th><th>Date d'inscription</th></tr>
+            <tr><th>Formation</th><th>Durée</th><th>Date d'inscription</th><th>Action</th></tr>
           </thead>
           <tbody>
             <tr v-for="i in mesInscriptions" :key="i.id">
               <td>{{ i.titre }}</td>
               <td>{{ i.duree }}h</td>
               <td>{{ new Date(i.date_inscription).toLocaleDateString('fr-FR') }}</td>
+              <td>
+                <button class="btn-desinscrire" @click="handleDesinscrire">Se désinscrire</button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -56,7 +59,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
-import { getFormations, inscrire, getMesInscriptions } from '../services/api';
+import { getFormations, inscrire, seDesinscrire, getMesInscriptions } from '../services/api';
 
 const router = useRouter();
 const auth = useAuthStore();
@@ -79,6 +82,18 @@ const handleInscrire = async (id) => {
   try {
     await inscrire(id);
     msgInscription.value = 'Inscription réussie !';
+    await loadData();
+    setTimeout(() => (msgInscription.value = ''), 3000);
+  } catch (err) {
+    msgInscription.value = err.response?.data?.message || 'Erreur.';
+  }
+};
+
+const handleDesinscrire = async () => {
+  if (!confirm('Se désinscrire de cette formation ?')) return;
+  try {
+    await seDesinscrire();
+    msgInscription.value = 'Désinscription réussie.';
     await loadData();
     setTimeout(() => (msgInscription.value = ''), 3000);
   } catch (err) {
@@ -137,5 +152,10 @@ table { width: 100%; border-collapse: collapse; font-size: 14px; }
 th { text-align: left; padding: 10px; background: #f8f9fa; color: #555; font-weight: 500; }
 td { padding: 10px; border-bottom: 1px solid #f0f0f0; }
 .empty { color: #888; font-size: 14px; }
+.btn-desinscrire {
+  padding: 5px 12px; background: #fff5f5; color: #e53e3e;
+  border: 1px solid #feb2b2; border-radius: 6px; cursor: pointer; font-size: 13px;
+}
+.btn-desinscrire:hover { background: #fed7d7; }
 .success { color: #38a169; font-size: 13px; margin-top: 0.75rem; }
 </style>
